@@ -28,7 +28,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: cgrindel/bazel-github-actions/actions/configure_git_user
+    - uses: cgrindel/gha_configure_git_user@main
 
     - name: Create Release Tag
       shell: bash
