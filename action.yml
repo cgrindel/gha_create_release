@@ -28,7 +28,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: cgrindel/gha_configure_git_user@main
+    - uses: cgrindel/gha_configure_git_user@v1
 
     - name: Create Release Tag
       shell: bash
