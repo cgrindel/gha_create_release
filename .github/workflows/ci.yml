@@ -1,0 +1,66 @@
+name: CI for PR Merge
+
+on:
+  pull_request:
+    branches: [ main, test_main ]
+  workflow_call:
+
+jobs:
+  all_ci_tests:
+    runs-on: ubuntu-20.04
+    env:
+      CC: clang
+    steps:
+
+    - uses: tibdex/github-app-token@v1
+      name: Generate Token for gha_create_release_test
+      id: generate_token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+        repository: cgrindel/gha_create_release_test
+
+    - uses: actions/checkout@v2
+      name: Checkout gha_create_release
+      with:
+        path: gha_create_release
+
+    - uses: actions/checkout@v2
+      name: Checkout gha_create_release_test
+      with:
+        path: gha_create_release_test
+        repository: cgrindel/gha_create_release_test
+        token: ${{ steps.generate_token.outputs.token }}
+
+    - uses: ./gha_create_release
+      id: create_release
+      name: Create Release in gha_create_release_test
+      with:
+        release_tag: v999.0.0-${{ github.run_id }}-${{ github.run_attempt }}
+        github_token: ${{ steps.generate_token.outputs.token }}
+        workspace_path: gha_create_release_test
+        repository: cgrindel/gha_create_release_test
+
+    - name: Assert PR for Update README.md Info
+      shell: bash
+      env:
+        RELEASE_URL: ${{ steps.create_release.outputs.release_url }}
+        RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
+        UPDATE_README_PR_NUM: ${{ steps.create_release.outputs.update_readme_pr_number }}
+        UPDATE_README_PR_URL: ${{ steps.create_release.outputs.update_readme_pr_url }}
+      run: |
+        echo "RELEASE_URL: ${RELEASE_URL:-}"
+        echo "RELEASE_ID: ${RELEASE_ID:-}"
+        echo "UPDATE_README_PR_NUM: ${UPDATE_README_PR_NUM:-}"
+        echo "UPDATE_README_PR_URL: ${UPDATE_README_PR_URL:-}"
+        [[ -z "${RELEASE_URL:-}" ]] && \
+          (echo >&2 "Expected a release URL." && exit 1)
+        [[ -z "${RELEASE_ID:-}" ]] && \
+          (echo >&2 "Expected a release ID." && exit 1)
+        [[ -z "${UPDATE_README_PR_NUM:-}" ]] && \
+          (echo >&2 "Expected a PR number." && exit 1)
+        [[ -z "${UPDATE_README_PR_URL:-}" ]] && \
+          (echo >&2 "Expected a PR URL." && exit 1)
+        [[ "${UPDATE_README_PR_URL:-}" =~ "https://github.com/cgrindel/gha_create_release_test/pull/" ]] || \
+          (echo >&2 "Expected PR URL to be formed differently." && exit 1)
+

@@ -17,6 +17,9 @@ inputs:
   update_readme_target:
     type: string
     default: "//release:update_readme"
+  readme_path:
+    type: string
+    default: "README.md"
   create_release_tag_target:
     type: string
     default: "@cgrindel_bazel_starlib//bzlrelease/tools:create_release_tag"
@@ -24,11 +27,33 @@ inputs:
     description: The branch being merged to.
     type: string
     default: main
+  workspace_path:
+    description: "The Bazel workspace directory."
+    type: string
+    default: ""
+  repository:
+    description: "The repository where the release should occur."
+
+outputs:
+  release_url:
+    description: "The URL for the release."
+    value: ${{ steps.create_release.outputs.url }}
+  release_id:
+    description: "The ID for the release."
+    value: ${{ steps.create_release.outputs.id }}
+  update_readme_pr_number:
+    description: "The PR number for the update README.md PR."
+    value: ${{ steps.create_pr.outputs.pull-request-number }}
+  update_readme_pr_url:
+    description: "The URL for the update README.md PR."
+    value: ${{ steps.create_pr.outputs.pull-request-url }}
 
 runs:
   using: composite
   steps:
     - uses: cgrindel/gha_configure_git_user@v1
+      with:
+        path: ${{ inputs.workspace_path }}
 
     - name: Create Release Tag
       shell: bash
@@ -37,29 +62,42 @@ runs:
         RELEASE_TAG: ${{ inputs.release_tag }}
         RESET_TAG: ${{ inputs.reset_tag }}
         CREATE_RELEASE_TAG_TARGET: ${{ inputs.create_release_tag_target }}
+        WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
+        [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         tag_args=()
         [[ "${RESET_TAG:-}" == true ]] && tag_args+=( "--reset_tag" )
         tag_args+=( "${RELEASE_TAG}" )
         bazelisk run "${CREATE_RELEASE_TAG_TARGET}" -- "${tag_args[@]}"
 
     - name: Generate Release Notes
+      id: generate_release_notes
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         RELEASE_TAG: ${{ inputs.release_tag }}
         RELEASE_NOTES_TARGET: ${{ inputs.release_notes_target }}
+        WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
+        [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
+        # Do not output the release_notes.md in the git repo. It will make 
+        # later steps unhappy due to untracked files.
+        release_notes_path="${HOME}/create_release_outputs/release_notes.md"
+        mkdir -p "$(dirname "${release_notes_path}")"
         bazelisk run "${RELEASE_NOTES_TARGET}" -- \
-          --output release_notes.md \
+          --output "${release_notes_path}" \
           "${RELEASE_TAG}"
+        echo "::set-output name=release_notes_path::${release_notes_path}"
 
     - name: Create Release
+      id: create_release
       uses: softprops/action-gh-release@v1
       with:
         name: Release ${{ inputs.release_tag }}
-        body_path: release_notes.md
+        body_path: ${{ steps.generate_release_notes.outputs.release_notes_path }}
         tag_name: ${{ inputs.release_tag }}
+        token: ${{ inputs.github_token }}
+        repository: ${{ inputs.repository }}
 
     - name: Update README.md
       shell: bash
@@ -67,7 +105,9 @@ runs:
         UPDATE_README_TARGET: ${{ inputs.update_readme_target }}
         RELEASE_TAG: ${{ inputs.release_tag }}
         README_PATH: ${{ inputs.readme_path }}
+        WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
+        [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         bazelisk run "${UPDATE_README_TARGET}" -- \
           --readme "${README_PATH}" \
           "${RELEASE_TAG}"
@@ -84,6 +124,7 @@ runs:
         delete-branch: true
         title: Update REAMDE.md for ${{ inputs.release_tag }}
         body: Automated update of `${{ inputs.readme_path }}` for release ${{ inputs.release_tag }}
+        path: ${{ inputs.workspace_path }}
 
     - name: Enable PR Automerge
       if: steps.create_pr.outputs.pull-request-operation == 'created'
@@ -92,3 +133,4 @@ runs:
         token: ${{ inputs.github_token }}
         pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
         merge-method: squash
+        repository: ${{ inputs.repository }}
