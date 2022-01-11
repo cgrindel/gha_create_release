@@ -14,12 +14,14 @@ jobs:
 
     - uses: actions/checkout@v2
       name: Checkout gha_create_release
-      path: gha_create_release
+      with:
+        path: gha_create_release
 
     - uses: actions/checkout@v2
       name: Checkout gha_create_release_test
-      path: gha_create_release_test
-      repository: cgrindel/gha_create_release_test
+      with:
+        path: gha_create_release_test
+        repository: cgrindel/gha_create_release_test
 
     - uses: tibdex/github-app-token@v1
       name: Generate Token for gha_create_release_test
