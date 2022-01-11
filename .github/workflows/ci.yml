@@ -1,0 +1,37 @@
+name: CI for PR Merge
+
+on:
+  pull_request:
+    branches: [ main, test_main ]
+  workflow_call:
+
+jobs:
+  ubuntu_build:
+    runs-on: ubuntu-20.04
+    env:
+      CC: clang
+    steps:
+
+    - uses: actions/checkout@v2
+      name: Checkout gha_create_release
+      path: gha_create_release
+
+    - uses: actions/checkout@v2
+      name: Checkout gha_create_release_test
+      path: gha_create_release_test
+      repository: cgrindel/gha_create_release_test
+
+    - uses: tibdex/github-app-token@v1
+      name: Generate Token for gha_create_release_test
+      id: generate_token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+        repository: cgrindel/gha_create_release_test
+
+    - name: DEBUG
+      shell: bash
+      env:
+        APP_TOKEN: ${{ steps.generate_token.otuputs.token }}
+      run: |
+        echo "APP_TOKEN: ${APP_TOKEN}"
