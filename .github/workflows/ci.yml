@@ -12,6 +12,14 @@ jobs:
       CC: clang
     steps:
 
+    - uses: tibdex/github-app-token@v1
+      name: Generate Token for gha_create_release_test
+      id: generate_token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+        repository: cgrindel/gha_create_release_test
+
     - uses: actions/checkout@v2
       name: Checkout gha_create_release
       with:
@@ -22,14 +30,7 @@ jobs:
       with:
         path: gha_create_release_test
         repository: cgrindel/gha_create_release_test
-
-    - uses: tibdex/github-app-token@v1
-      name: Generate Token for gha_create_release_test
-      id: generate_token
-      with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.APP_PRIVATE_KEY }}
-        repository: cgrindel/gha_create_release_test
+        token: ${{ steps.generate_token.outputs.token }}
 
 #     - name: DEBUG
 #       shell: bash
