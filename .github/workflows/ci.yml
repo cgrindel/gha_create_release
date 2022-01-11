@@ -6,7 +6,7 @@ on:
   workflow_call:
 
 jobs:
-  ubuntu_build:
+  all_ci_tests:
     runs-on: ubuntu-20.04
     env:
       CC: clang
