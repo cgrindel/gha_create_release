@@ -97,6 +97,9 @@ runs:
         README_PATH: ${{ inputs.readme_path }}
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
+        # DEBUG BEGIN
+        set -x
+        # DEBUG END
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         bazelisk run "${UPDATE_README_TARGET}" -- \
           --readme "${README_PATH}" \
