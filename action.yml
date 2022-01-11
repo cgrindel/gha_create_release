@@ -31,6 +31,14 @@ inputs:
   repository:
     description: "The repository where the release should occur."
 
+outputs:
+  update_readme_pr_number:
+    description: "The PR number for the update README.md PR."
+    value: ${{ steps.create_pr.outputs.pull-request-number }}
+  update_readme_pr_url:
+    description: "The URL for the update README.md PR."
+    value: ${{ steps.create_pr.outputs.pull-request-url }}
+
 runs:
   using: composite
   steps:
