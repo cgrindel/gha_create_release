@@ -35,6 +35,8 @@ runs:
   using: composite
   steps:
     - uses: cgrindel/gha_configure_git_user@v1
+      with:
+        path: ${{ inputs.workspace_path }}
 
     - name: Create Release Tag
       shell: bash
