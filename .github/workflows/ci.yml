@@ -47,11 +47,14 @@ jobs:
         UPDATE_README_PR_NUM: ${{ steps.create_release.outputs.update_readme_pr_number }}
         UPDATE_README_PR_URL: ${{ steps.create_release.outputs.update_readme_pr_url }}
       run: |
+        # DEBUG BEGIN
+        set -x
+        # DEBUG END
         echo "UPDATE_README_PR_NUM: ${UPDATE_README_PR_NUM:-}"
         echo "UPDATE_README_PR_URL: ${UPDATE_README_PR_URL:-}"
-        [[ -z "${UPDATE_README_PR_NUM:-}" ]] || \
+        [[ -z "${UPDATE_README_PR_NUM:-}" ]] && \
           (exit >&2 "Expected a PR number." && exit 1)
-        [[ -z "${UPDATE_README_PR_URL:-}" ]] || \
+        [[ -z "${UPDATE_README_PR_URL:-}" ]] && \
           (exit >&2 "Expected a PR URL." && exit 1)
         [[ "${UPDATE_README_PR_URL:-}" =~ "https://github.com/cgrindel/gha_create_release_test/pull/" ]] || \
           (exit >&2 "Expected PR URL to be formed differently." && exit 1)
