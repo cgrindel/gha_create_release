@@ -63,7 +63,8 @@ runs:
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
-        # release_notes_path="${PWD}/release_notes.md"
+        # Do not output the release_notes.md in the git repo. It will make 
+        # later steps unhappy due to untracked files.
         release_notes_path="${HOME}/create_release_outputs/release_notes.md"
         mkdir -p "$(dirname "${release_notes_path}")"
         bazelisk run "${RELEASE_NOTES_TARGET}" -- \
