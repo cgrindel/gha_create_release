@@ -17,6 +17,9 @@ inputs:
   update_readme_target:
     type: string
     default: "//release:update_readme"
+  readme_path:
+    type: string
+    default: "README.md"
   create_release_tag_target:
     type: string
     default: "@cgrindel_bazel_starlib//bzlrelease/tools:create_release_tag"
