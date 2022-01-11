@@ -28,7 +28,7 @@ inputs:
     description: "The Bazel workspace directory."
     type: string
     default: ""
-  target_repo:
+  repository:
     description: "The repository where the release should occur."
 
 runs:
@@ -71,7 +71,7 @@ runs:
         body_path: release_notes.md
         tag_name: ${{ inputs.release_tag }}
         token: ${{ inputs.github_token }}
-        repository: ${{ inputs.target_repo }}
+        repository: ${{ inputs.repository }}
 
     - name: Update README.md
       shell: bash
@@ -107,4 +107,4 @@ runs:
         token: ${{ inputs.github_token }}
         pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
         merge-method: squash
-        repository: ${{ inputs.target_repo }}
+        repository: ${{ inputs.repository }}

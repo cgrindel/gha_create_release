@@ -31,9 +31,17 @@ jobs:
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
         repository: cgrindel/gha_create_release_test
 
-    - name: DEBUG
-      shell: bash
-      env:
-        APP_TOKEN: ${{ steps.generate_token.otuputs.token }}
-      run: |
-        echo "APP_TOKEN: ${APP_TOKEN}"
+#     - name: DEBUG
+#       shell: bash
+#       env:
+#         APP_TOKEN: ${{ steps.generate_token.otuputs.token }}
+#       run: |
+#         echo "APP_TOKEN: ${APP_TOKEN}"
+
+    - uses: ./
+      name: Create Release in gha_create_release_test
+      with:
+        release_tag: v999.0.0-${{ github.run_id }}-${{ github.run_attempt }}
+        github_token: ${{ steps.generate_token.outputs.token }}
+        workspace_path: gha_create_release_test
+        repository: cgrindel/gha_create_release_test
