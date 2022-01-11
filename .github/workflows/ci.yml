@@ -44,11 +44,19 @@ jobs:
     - name: Assert PR for Update README.md Info
       shell: bash
       env:
+        RELEASE_URL: ${{ steps.create_release.outputs.release_url }}
+        RELEASE_ID: ${{ steps.create_release.outputs.release_id }}
         UPDATE_README_PR_NUM: ${{ steps.create_release.outputs.update_readme_pr_number }}
         UPDATE_README_PR_URL: ${{ steps.create_release.outputs.update_readme_pr_url }}
       run: |
+        echo "RELEASE_URL: ${RELEASE_URL:-}"
+        echo "RELEASE_ID: ${RELEASE_ID:-}"
         echo "UPDATE_README_PR_NUM: ${UPDATE_README_PR_NUM:-}"
         echo "UPDATE_README_PR_URL: ${UPDATE_README_PR_URL:-}"
+        [[ -z "${RELEASE_URL:-}" ]] && \
+          (echo >&2 "Expected a release URL." && exit 1)
+        [[ -z "${RELEASE_ID:-}" ]] && \
+          (echo >&2 "Expected a release ID." && exit 1)
         [[ -z "${UPDATE_README_PR_NUM:-}" ]] && \
           (echo >&2 "Expected a PR number." && exit 1)
         [[ -z "${UPDATE_README_PR_URL:-}" ]] && \
