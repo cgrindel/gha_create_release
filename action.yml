@@ -67,6 +67,7 @@ runs:
       env:
         REPO_NAME: ${{ steps.resolve_repository_name.outputs.repository }}
       run: |
+        echo "Hello"
         echo "REPO_NAME: ${REPO_NAME:-}"
 
     - name: Create Release Tag
