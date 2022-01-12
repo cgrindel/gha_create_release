@@ -14,6 +14,14 @@ The action will do the following:
 
 _(This assumes that the release targets were defined under `//release`.)_
 
+## Table of Contents
+
+* [Quickstart](#quickstart)
+  * [Implement bzlrelease in your Bazel workspace](#implement-bzlrelease-in-your-bazel-workspace)
+  * [Set Up a GitHub App to Generate Tokens](#set-up-a-github-app-to-generate-tokens)
+  * [Implement a GitHub Actions Workflow for Creating a Release](#implement-a-github-actions-workflow-for-creating-a-release)
+  * [Create a release](#create-a-release)
+
 
 ## Quickstart
 
