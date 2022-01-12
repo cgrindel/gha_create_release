@@ -55,6 +55,21 @@ runs:
       with:
         path: ${{ inputs.workspace_path }}
 
+    - uses: cgrindel/gha_select_value@v1
+      id: resolve_repository_name
+      name: Resolve Repository Name
+      with:
+        value0: ${{ inputs.repository }}
+        value1: ${{ github.repository }}
+
+    - name: DEBUG
+      shell: bash
+      env:
+        REPO_NAME: ${{ steps.resolve_repository_name.outputs.selected_value }}
+      run: |
+        echo "Hello"
+        echo "REPO_NAME: ${REPO_NAME:-}"
+
     - name: Create Release Tag
       shell: bash
       env:
@@ -97,7 +112,7 @@ runs:
         body_path: ${{ steps.generate_release_notes.outputs.release_notes_path }}
         tag_name: ${{ inputs.release_tag }}
         token: ${{ inputs.github_token }}
-        repository: ${{ inputs.repository }}
+        repository: ${{ steps.resolve_repository_name.outputs.selected_value }}
 
     - name: Update README.md
       shell: bash
@@ -133,4 +148,4 @@ runs:
         token: ${{ inputs.github_token }}
         pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
         merge-method: squash
-        repository: ${{ inputs.repository }}
+        repository: ${{ steps.resolve_repository_name.outputs.selected_value }}
