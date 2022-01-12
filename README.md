@@ -1,6 +1,6 @@
-# Create Release GitHub Action for Bazel Workspaces Using cgrindel/bazel-starlib/bzlrelease
+# Create Release GitHub Action for Bazel Workspaces Using bzlrelease
 
-GitHub Action to create a release for Bazel workspaces that use
+This repository contains a GitHub Action that creates a release for Bazel workspaces which use
 [cgrindel/bazel-starlib/bzlrelease](https://github.com/cgrindel/bazel-starlib/tree/main/bzlrelease).
 
 The action will do the following:
