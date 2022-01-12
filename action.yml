@@ -62,6 +62,13 @@ runs:
         value0: ${{ inputs.repository }}
         value1: ${{ github.repository }}
 
+    - name: DEBUG
+      shell: bash
+      env:
+        REPO_NAME: ${{ steps.resolve_repository_name.outputs.repository }}
+      run: |
+        echo "REPO_NAME: ${REPO_NAME:-}"
+
     - name: Create Release Tag
       shell: bash
       env:
