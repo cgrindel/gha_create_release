@@ -129,11 +129,11 @@ runs:
 
     - name: Create PR for README.md Update
       id: create_pr
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ inputs.github_token }}
-        add-paths: |
-          ${{ inputs.readme_path }}
+        # add-paths: |
+        #   ${{ inputs.readme_path }}
         branch: auto_update_readme_for_${{ inputs.release_tag }}
         base: ${{ inputs.base_branch }}
         delete-branch: true
