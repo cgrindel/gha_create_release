@@ -143,7 +143,7 @@ runs:
 
     - name: Enable PR Automerge
       if: steps.create_pr.outputs.pull-request-operation == 'created'
-      uses: peter-evans/enable-pull-request-automerge@v1
+      uses: peter-evans/enable-pull-request-automerge@v2
       with:
         token: ${{ inputs.github_token }}
         pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
