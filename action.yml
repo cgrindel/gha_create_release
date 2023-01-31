@@ -110,6 +110,9 @@ runs:
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run : |
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
+        # DEBUG BEGIN
+        set -x
+        # DEBUG END
         bazelisk build -c opt "${RELEASE_ARCHIVE_TARGET}" "${RELEASE_ARCHIVE_SHA256_TARGET}"
         archive_path="$(bazelisk cquery "${RELEASE_ARCHIVE_TARGET}" --output=files 2>/dev/null)"
         sha256_path="$(bazelisk cquery "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
@@ -121,6 +124,9 @@ runs:
         ${release_archive_sha256_path}
         EOF
         )"
+        # DEBUG BEGIN
+        ls -la >&2
+        # DEBUG END
         cp "${archive_path}" "${release_archive_path}"
         cp "${sha256_path}" "${release_archive_sha256_path}"
         echo "::set-output name=release_archive_path::${release_archive_path}"
