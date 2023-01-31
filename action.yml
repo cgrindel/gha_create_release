@@ -20,9 +20,6 @@ inputs:
   release_archive_target:
     type: string
     default: "//release:archive"
-  release_archive_sha256_target:
-    type: string
-    default: "//release:archive_sha256"
   readme_path:
     type: string
     default: "README.md"
@@ -97,13 +94,13 @@ runs:
         tag_args=()
         [[ "${RESET_TAG:-}" == true ]] && tag_args+=( "--reset_tag" )
         tag_args+=( "${RELEASE_TAG}" )
-        bazelisk run "${CREATE_RELEASE_TAG_TARGET}" -- "${tag_args[@]}"
+        bazel_flags=(-c opt)
+        bazelisk run "${bazel_flags[@]}" "${CREATE_RELEASE_TAG_TARGET}" -- "${tag_args[@]}"
 
     - name: Build Release Artifacts
       id: build_release_artifacts
       shell: bash
       env:
-        RELEASE_ARCHIVE_SHA256_TARGET: ${{ inputs.release_archive_sha256_target }}
         RELEASE_ARCHIVE_TARGET: ${{ inputs.release_archive_target }}
         RELEASE_OUTPUTS_DIR: ${{ steps.create_release_outputs_dir.outputs.release_outputs_dir }}
         RELEASE_TAG: ${{ inputs.release_tag }}
@@ -114,29 +111,15 @@ runs:
         # DEBUG END
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         bazel_flags=(-c opt)
-        bazelisk build "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" "${RELEASE_ARCHIVE_SHA256_TARGET}"
+        bazelisk build "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}"
         archive_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" --output=files 2>/dev/null)"
-        sha256_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
         archive_basename="$(basename "${archive_path}")"
         ext="${archive_basename#*.}"
         fname="${archive_basename%%.*}"
         out_basename="${fname}.${RELEASE_TAG}.${ext}"
         release_archive_path="${RELEASE_OUTPUTS_DIR}/${out_basename}"
-        release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${out_basename}.sha256"
-        release_artifacts_list="$(cat <<-EOF
-        ${release_archive_path}
-        ${release_archive_sha256_path}
-
-        EOF
-        )"
-        # DEBUG BEGIN
-        echo >&2 "release_artifacts_list:\n${release_artifacts_list}"
-        # DEBUG END
         cp "${archive_path}" "${release_archive_path}"
-        cp "${sha256_path}" "${release_archive_sha256_path}"
         echo "::set-output name=release_archive_path::${release_archive_path}"
-        echo "::set-output name=release_archive_sha256_path::${release_archive_sha256_path}"
-        echo "::set-output name=release_artifacts_list::${release_artifacts_list}"
 
     - name: Generate Release Notes
       id: generate_release_notes
@@ -152,7 +135,8 @@ runs:
         # Do not output the release_notes.md in the git repo. It will make 
         # later steps unhappy due to untracked files.
         release_notes_path="${RELEASE_OUTPUTS_DIR}/release_notes.md"
-        bazelisk run "${RELEASE_NOTES_TARGET}" -- \
+        bazel_flags=(-c opt)
+        bazelisk run "${bazel_flags[@]}" "${RELEASE_NOTES_TARGET}" -- \
           --output "${release_notes_path}" \
           "${RELEASE_TAG}"
         echo "::set-output name=release_notes_path::${release_notes_path}"
@@ -166,7 +150,7 @@ runs:
         tag_name: ${{ inputs.release_tag }}
         token: ${{ inputs.github_token }}
         repository: ${{ steps.resolve_repository_name.outputs.selected_value }}
-        files: ${{ steps.build_release_artifacts.outputs.release_artifacts_list }}
+        files: ${{ steps.build_release_artifacts.outputs.release_archive_path }}
 
     - name: Update README.md
       shell: bash
@@ -177,7 +161,8 @@ runs:
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
-        bazelisk run "${UPDATE_README_TARGET}" -- \
+        bazel_flags=(-c opt)
+        bazelisk run "${bazel_flags[@]}" "${UPDATE_README_TARGET}" -- \
           --readme "${README_PATH}" \
           "${RELEASE_TAG}"
 
