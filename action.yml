@@ -119,7 +119,7 @@ runs:
         sha256_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
         archive_basename="$(basename "${archive_path}")"
         ext="${archive_basename#*.}"
-        fname="${archive_basename%.*}"
+        fname="${archive_basename%%.*}"
         out_basename="${fname}.${RELEASE_TAG}.${ext}"
         release_archive_path="${RELEASE_OUTPUTS_DIR}/${out_basename}"
         release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${out_basename}.sha256"
