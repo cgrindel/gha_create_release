@@ -106,9 +106,6 @@ runs:
         RELEASE_TAG: ${{ inputs.release_tag }}
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run : |
-        # DEBUG BEGIN
-        set -x
-        # DEBUG END
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         bazel_flags=(-c opt)
         bazelisk build "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}"
