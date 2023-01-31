@@ -113,9 +113,10 @@ runs:
         # DEBUG BEGIN
         set -x
         # DEBUG END
-        bazelisk build -c opt "${RELEASE_ARCHIVE_TARGET}" "${RELEASE_ARCHIVE_SHA256_TARGET}"
-        archive_path="$(bazelisk cquery "${RELEASE_ARCHIVE_TARGET}" --output=files 2>/dev/null)"
-        sha256_path="$(bazelisk cquery "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
+        bazel_flags=(-c opt)
+        bazelisk build "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" "${RELEASE_ARCHIVE_SHA256_TARGET}"
+        archive_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" --output=files 2>/dev/null)"
+        sha256_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
         ext="${archive_path#*.}"
         release_archive_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}"
         release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}.sha256"
