@@ -109,24 +109,27 @@ runs:
         RELEASE_TAG: ${{ inputs.release_tag }}
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run : |
-        [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         # DEBUG BEGIN
         set -x
         # DEBUG END
+        [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
         bazel_flags=(-c opt)
         bazelisk build "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" "${RELEASE_ARCHIVE_SHA256_TARGET}"
         archive_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_TARGET}" --output=files 2>/dev/null)"
         sha256_path="$(bazelisk cquery "${bazel_flags[@]}" "${RELEASE_ARCHIVE_SHA256_TARGET}" --output=files 2>/dev/null)"
-        ext="${archive_path#*.}"
-        release_archive_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}"
-        release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}.sha256"
+        archive_basename="$(basename "${archive_path}")"
+        ext="${archive_basename#*.}"
+        fname="${archive_basename%.*}"
+        out_basename="${fname}.${RELEASE_TAG}.${ext}"
+        release_archive_path="${RELEASE_OUTPUTS_DIR}/${out_basename}"
+        release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${out_basename}.sha256"
         release_artifacts_list="$(cat <<-EOF
         ${release_archive_path}
         ${release_archive_sha256_path}
         EOF
         )"
         # DEBUG BEGIN
-        ls -la >&2
+        echo >&2 "release_artifacts_list:\n${release_artifacts_list}"
         # DEBUG END
         cp "${archive_path}" "${release_archive_path}"
         cp "${sha256_path}" "${release_archive_sha256_path}"
