@@ -105,7 +105,7 @@ runs:
       env:
         RELEASE_ARCHIVE_SHA256_TARGET: ${{ inputs.release_archive_sha256_target }}
         RELEASE_ARCHIVE_TARGET: ${{ inputs.release_archive_target }}
-        RELEASE_OUTPUTS_DIR: ${{ steps.create_release_outputs_dir.release_outputs_dir }}
+        RELEASE_OUTPUTS_DIR: ${{ steps.create_release_outputs_dir.outputs.release_outputs_dir }}
         RELEASE_TAG: ${{ inputs.release_tag }}
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run : |
@@ -140,7 +140,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         RELEASE_NOTES_TARGET: ${{ inputs.release_notes_target }}
-        RELEASE_OUTPUTS_DIR: ${{ steps.create_release_outputs_dir.release_outputs_dir }}
+        RELEASE_OUTPUTS_DIR: ${{ steps.create_release_outputs_dir.outputs.release_outputs_dir }}
         RELEASE_TAG: ${{ inputs.release_tag }}
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
