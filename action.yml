@@ -126,6 +126,7 @@ runs:
         release_artifacts_list="$(cat <<-EOF
         ${release_archive_path}
         ${release_archive_sha256_path}
+
         EOF
         )"
         # DEBUG BEGIN
