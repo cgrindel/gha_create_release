@@ -116,7 +116,7 @@ runs:
         ext="${archive_path#*.}"
         release_archive_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}"
         release_archive_sha256_path="${RELEASE_OUTPUTS_DIR}/${RELEASE_TAG}.${ext}.sha256"
-        release_artifacts_list="$(<< cat -EOF
+        release_artifacts_list="$(cat <<-EOF
         ${release_archive_path}
         ${release_archive_sha256_path}
         EOF
