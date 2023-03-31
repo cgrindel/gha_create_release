@@ -79,7 +79,7 @@ runs:
       run: |
         release_outputs_dir="${HOME}/create_release_outputs"
         mkdir -p "${release_outputs_dir}"
-        echo "::set-output name=release_outputs_dir::${release_outputs_dir}"
+        echo "release_outputs_dir=${release_outputs_dir}" >> $GITHUB_OUTPUT
 
     - name: Create Release Tag
       shell: bash
@@ -116,7 +116,7 @@ runs:
         out_basename="${fname}.${RELEASE_TAG}.${ext}"
         release_archive_path="${RELEASE_OUTPUTS_DIR}/${out_basename}"
         cp "${archive_path}" "${release_archive_path}"
-        echo "::set-output name=release_archive_path::${release_archive_path}"
+        echo "release_archive_path=${release_archive_path}" >> $GITHUB_OUTPUT
 
     - name: Generate Release Notes
       id: generate_release_notes
@@ -136,7 +136,7 @@ runs:
         bazelisk run "${bazel_flags[@]}" "${RELEASE_NOTES_TARGET}" -- \
           --output "${release_notes_path}" \
           "${RELEASE_TAG}"
-        echo "::set-output name=release_notes_path::${release_notes_path}"
+        echo "release_notes_path=${release_notes_path}" >> $GITHUB_OUTPUT
 
     - name: Create Release
       id: create_release
