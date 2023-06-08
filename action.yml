@@ -173,8 +173,11 @@ runs:
         branch: auto_update_readme_for_${{ inputs.release_tag }}
         base: ${{ inputs.base_branch }}
         delete-branch: true
-        title: Update README.md for ${{ inputs.release_tag }}
-        body: Automated update of `${{ inputs.readme_path }}` for release ${{ inputs.release_tag }}
+        title: chore: update README.md for ${{ inputs.release_tag }}
+        body: |
+          Automated update of `${{ inputs.readme_path }}` for release ${{ inputs.release_tag }}
+          
+          This pull request was created by [cgrindel/gha_create_release](https://github.com/cgrindel/gha_create_release).
         path: ${{ inputs.workspace_path }}
 
     - name: Enable PR Automerge
