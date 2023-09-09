@@ -12,7 +12,7 @@ jobs:
       CC: clang
     steps:
 
-    - uses: tibdex/github-app-token@v1
+    - uses: tibdex/github-app-token@v2
       name: Generate Token for gha_create_release_test
       id: generate_token
       with:
