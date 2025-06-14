@@ -129,7 +129,7 @@ runs:
         WORKSPACE_PATH: ${{ inputs.workspace_path }}
       run: |
         [[ -z "${WORKSPACE_PATH:-}" ]] || cd "${WORKSPACE_PATH}"
-        # Do not output the release_notes.md in the git repo. It will make 
+        # Do not output the release_notes.md in the git repo. It will make
         # later steps unhappy due to untracked files.
         release_notes_path="${RELEASE_OUTPUTS_DIR}/release_notes.md"
         bazel_flags=(-c opt)
@@ -137,6 +137,10 @@ runs:
           --output "${release_notes_path}" \
           "${RELEASE_TAG}"
         echo "release_notes_path=${release_notes_path}" >> $GITHUB_OUTPUT
+
+    # DEBUG BEGIN
+    # TODO(chuck): FIX ME!
+    # DEBUG END
 
     - name: Create Release
       id: create_release
@@ -176,7 +180,7 @@ runs:
         title: "chore: update README.md for ${{ inputs.release_tag }}"
         body: |
           Automated update of `${{ inputs.readme_path }}` for release ${{ inputs.release_tag }}
-          
+
           This pull request was created by [cgrindel/gha_create_release](https://github.com/cgrindel/gha_create_release).
         path: ${{ inputs.workspace_path }}
 
