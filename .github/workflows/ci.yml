@@ -7,7 +7,7 @@ on:
 
 jobs:
   all_ci_tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       CC: clang
     steps:
@@ -63,4 +63,3 @@ jobs:
           (echo >&2 "Expected a PR URL." && exit 1)
         [[ "${UPDATE_README_PR_URL:-}" =~ "https://github.com/cgrindel/gha_create_release_test/pull/" ]] || \
           (echo >&2 "Expected PR URL to be formed differently." && exit 1)
-
